@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tiến Độ Dự Án — HP CONS</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+  :root {
+    --color-text-primary: #1a1a18;
+    --color-text-secondary: #6b6a66;
+    --color-text-warning: #854F0B;
+    --color-background-primary: #ffffff;
+    --color-background-secondary: #f5f4f0;
+    --color-border-tertiary: #e8e7e3;
+    --color-border-secondary: #d4d3ce;
+    --color-border-warning: #FAC775;
+    --color-background-warning: #FAEEDA;
+    --border-radius-md: 8px;
+    --border-radius-lg: 12px;
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #f2f1ed; font-family: var(--font-sans); min-height: 100vh; }
+  input, select, textarea { font-family: var(--font-sans); font-size: 13px; padding: 7px 10px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); width: 100%; color: var(--color-text-primary); background: var(--color-background-primary); }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: #185FA5; }
+  textarea { resize: vertical; }
+
+  #gate { display:flex; min-height:100vh; align-items:center; justify-content:center; padding:2rem 1rem; transition:opacity .25s; }
+  #app { display:none; opacity:0; transition:opacity .35s; padding:.9rem; max-width:1100px; margin:0 auto; }
+  .pw-card { background:#fff; border:0.5px solid var(--color-border-tertiary); border-radius:var(--border-radius-lg); padding:2.25rem 2rem; width:100%; max-width:360px; text-align:center; }
+  .pw-icon { display:inline-flex; align-items:center; justify-content:center; width:52px; height:52px; border-radius:var(--border-radius-lg); background:#E6F1FB; margin-bottom:1rem; }
+  .pw-btn { width:100%; background:#185FA5; color:#fff; border:none; border-radius:var(--border-radius-md); padding:11px; font-size:13.5px; font-weight:500; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; }
+  .pw-btn:hover { background:#0C447C; }
+  .pw-err { display:none; font-size:12px; color:#A32D2D; background:#FCEBEB; border:0.5px solid #F7C1C1; border-radius:var(--border-radius-md); padding:8px 10px; margin-bottom:10px; text-align:left; }
+
+  .tabs { display:flex; border-bottom:0.5px solid var(--color-border-tertiary); margin-bottom:1rem; gap:0; overflow-x:auto; background:#fff; border-radius:var(--border-radius-md) var(--border-radius-md) 0 0; padding:0 .5rem; }
+  .tab { background:none; border:none; border-bottom:2.5px solid transparent; padding:10px 14px; cursor:pointer; font-size:13px; color:var(--color-text-secondary); display:inline-flex; align-items:center; gap:5px; white-space:nowrap; }
+  .tab:hover { color:var(--color-text-primary); }
+  .tab.active { color:#185FA5; border-bottom-color:#185FA5; font-weight:500; }
+  .tbl { width:100%; border-collapse:collapse; font-size:13px; }
+  .tbl th { text-align:left; padding:8px 10px; font-weight:500; font-size:11.5px; color:var(--color-text-secondary); border-bottom:0.5px solid var(--color-border-tertiary); background:var(--color-background-secondary); white-space:nowrap; }
+  .tbl td { padding:8px 10px; border-bottom:0.5px solid var(--color-border-tertiary); vertical-align:middle; }
+  .tbl tr:hover td { background:var(--color-background-secondary); }
+  .badge { display:inline-block; padding:3px 9px; border-radius:10px; font-size:11.5px; font-weight:500; white-space:nowrap; }
+  .b-track{background:#E1F5EE;color:#0F6E56} .b-risk{background:#FAEEDA;color:#854F0B}
+  .b-delay{background:#FCEBEB;color:#A32D2D} .b-done{background:#F1EFE8;color:#5F5E5A} .b-wait{background:#E6F1FB;color:#185FA5}
+  .fg { margin-bottom:12px; }
+  .fl { display:block; font-size:12px; font-weight:500; margin-bottom:5px; color:var(--color-text-secondary); }
+  .fr { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .fr3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+  .pb { background:var(--color-background-secondary); border-radius:4px; height:6px; margin-top:3px; }
+  .pf { height:6px; border-radius:4px; }
+  .card { background:#fff; border:0.5px solid var(--color-border-tertiary); border-radius:var(--border-radius-lg); padding:1rem 1.25rem; margin-bottom:1rem; }
+  .mc { background:var(--color-background-secondary); border-radius:var(--border-radius-md); padding:14px; }
+  .btn { border-radius:var(--border-radius-md); cursor:pointer; font-size:13px; padding:7px 14px; display:inline-flex; align-items:center; gap:5px; font-family:var(--font-sans); }
+  .btn-p { background:#185FA5; color:#fff; border:none; font-weight:500; } .btn-p:hover { background:#0C447C; }
+  .btn-s { background:none; border:0.5px solid var(--color-border-secondary); color:var(--color-text-primary); } .btn-s:hover { background:var(--color-background-secondary); }
+  .btn-d { background:none; border:0.5px solid #F7C1C1; color:#A32D2D; font-size:12px; padding:5px 10px; font-family:var(--font-sans); cursor:pointer; border-radius:var(--border-radius-md); display:inline-flex; align-items:center; gap:4px; }
+  .btn-e { background:none; border:0.5px solid var(--color-border-tertiary); color:var(--color-text-secondary); font-size:12px; padding:5px 9px; font-family:var(--font-sans); cursor:pointer; border-radius:var(--border-radius-md); }
+  .btn-logout { background:none; border:0.5px solid #F7C1C1; color:#A32D2D; border-radius:var(--border-radius-md); padding:7px 12px; cursor:pointer; font-size:13px; font-family:var(--font-sans); display:inline-flex; align-items:center; gap:4px; } .btn-logout:hover { background:#FCEBEB; }
+  .sh { font-size:13px; font-weight:500; color:var(--color-text-primary); margin:0 0 10px; padding-bottom:8px; border-bottom:0.5px solid var(--color-border-tertiary); }
+  .cb-row { display:flex; flex-wrap:wrap; gap:6px; }
+  .cb-item { display:flex; align-items:center; gap:4px; font-size:12.5px; padding:5px 9px; border:0.5px solid var(--color-border-tertiary); border-radius:var(--border-radius-md); cursor:pointer; color:var(--color-text-primary); }
+  .cb-item:has(input:checked) { border-color:#185FA5; background:#E6F1FB; }
+  .cb-item input { width:auto; margin:0; }
+  .dl-wrap { border:1.5px solid #185FA5; border-radius:var(--border-radius-md); padding:1rem; margin-top:8px; background:#fff; }
+  .dl-wrap input, .dl-wrap select, .dl-wrap textarea { background:var(--color-background-secondary) !important; }
+  .btn-add-dl { background:#185FA5; color:#fff; border:2px solid #0C447C; font-weight:500; padding:8px 14px; border-radius:var(--border-radius-md); cursor:pointer; font-size:13px; font-family:var(--font-sans); display:flex; align-items:center; gap:5px; width:100%; justify-content:center; } .btn-add-dl:hover { background:#0C447C; }
+  .late-box { border:1.5px solid var(--color-border-warning); border-radius:var(--border-radius-md); padding:1rem; background:var(--color-background-warning); }
+  .late-box textarea { background:#fff !important; }
+  .gt-row { display:flex; align-items:center; border-bottom:0.5px solid var(--color-border-tertiary); min-height:38px; }
+  .gt-lbl { width:180px; flex-shrink:0; font-size:12px; padding:3px 8px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .gt-tl { flex:1; position:relative; height:38px; overflow:hidden; }
+  .gt-bar { position:absolute; height:20px; top:9px; border-radius:3px; padding:0 6px; font-size:11px; color:#fff; font-weight:500; overflow:hidden; white-space:nowrap; min-width:3px; display:flex; align-items:center; }
+  .gt-tdl { position:absolute; top:0; bottom:0; width:2px; background:#E24B4A; z-index:2; }
+  .vp-btn { background:none; border:0.5px solid var(--color-border-tertiary); border-radius:var(--border-radius-md); padding:5px 12px; cursor:pointer; font-size:12.5px; color:var(--color-text-secondary); font-family:var(--font-sans); } .vp-btn.active { background:#185FA5; color:#fff; border-color:#185FA5; }
+  .slot-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .stag { display:inline-flex; align-items:center; gap:5px; padding:5px 10px; background:var(--color-background-secondary); border-radius:var(--border-radius-md); font-size:12.5px; color:var(--color-text-primary); }
+  .hi { font-size:16px; font-weight:500; border:none; background:transparent; color:var(--color-text-primary); padding:0; outline:none; border-bottom:1.5px solid transparent; font-family:var(--font-sans); } .hi:focus { border-bottom-color:#185FA5; }
+  details > summary { cursor:pointer; list-style:none; display:flex; align-items:center; gap:5px; }
+  details > summary::-webkit-details-marker { display:none; }
+  @media (max-width: 600px) {
+    .fr { grid-template-columns:1fr; }
+    .fr3 { grid-template-columns:1fr 1fr; }
+    #app { padding:.6rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- GATE -->
+<div id="gate">
+  <div class="pw-card">
+    <div class="pw-icon"><i class="ti ti-building-factory-2" style="font-size:24px;color:#185FA5"></i></div>
+    <div style="font-size:13px;font-weight:500;color:#185FA5;letter-spacing:.07em;margin-bottom:4px">HP CONS</div>
+    <div style="font-size:19px;font-weight:500;color:#1a1a18;margin-bottom:5px">Tiến độ dự án</div>
+    <div style="font-size:12px;color:#6b6a66;margin-bottom:1.75rem;line-height:1.6">Hệ thống quản lý nội bộ<br>Dữ liệu bảo mật — chỉ dành cho nhân sự được ủy quyền</div>
+    <div style="text-align:left;margin-bottom:10px">
+      <label class="fl">Mật khẩu truy cập</label>
+      <input id="pw-in" type="password" placeholder="Nhập mật khẩu..." autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div id="pw-err" class="pw-err"><i class="ti ti-alert-circle"></i> Mật khẩu không chính xác, vui lòng thử lại.</div>
+    <button class="pw-btn" onclick="doLogin()"><i class="ti ti-lock-open"></i> Xác nhận truy cập</button>
+    <div style="margin-top:1.25rem;font-size:11px;color:#6b6a66"><i class="ti ti-shield-lock" style="vertical-align:-2px"></i> Truy cập được ghi nhận bởi hệ thống</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+
+<div class="card">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px">
+    <div>
+      <div style="font-size:10px;font-weight:500;letter-spacing:.09em;color:#6b6a66;margin-bottom:6px">TIẾN ĐỘ DỰ ÁN</div>
+      <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap">
+        <i class="ti ti-building" style="font-size:16px;color:#185FA5"></i>
+        <input id="h-dept" class="hi" value="Phòng Đấu thầu" oninput="CFG.deptName=this.value;renderM()">
+        <span style="color:#d4d3ce">·</span>
+        <input id="h-year" class="hi" style="width:50px" value="2026" oninput="CFG.deptYear=this.value">
+      </div>
+      <div id="hdate" style="font-size:11.5px;color:#6b6a66;margin-top:4px"></div>
+    </div>
+    <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center">
+      <button class="btn btn-s" onclick="expXL()"><i class="ti ti-table-export"></i> Xuất Excel</button>
+      <button class="btn btn-p" onclick="newF()"><i class="ti ti-plus"></i> Thêm</button>
+      <button class="btn-logout" onclick="doLogout()" title="Đăng xuất"><i class="ti ti-lock"></i> Đăng xuất</button>
+    </div>
+  </div>
+</div>
+
+<div id="mets" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1rem"></div>
+
+<div class="tabs">
+  <button class="tab active" id="t-list" onclick="go('list')"><i class="ti ti-list"></i> Dự án</button>
+  <button class="tab" id="t-form" onclick="go('form')"><i class="ti ti-edit"></i> Chi tiết</button>
+  <button class="tab" id="t-gantt" onclick="go('gantt')"><i class="ti ti-timeline"></i> Gantt</button>
+  <button class="tab" id="t-kpi" onclick="go('kpi')"><i class="ti ti-award"></i> KPI</button>
+  <button class="tab" id="t-cfg" onclick="go('cfg')"><i class="ti ti-settings"></i> Cấu hình</button>
+</div>
+
+<div class="card" style="border-radius:0 0 var(--border-radius-lg) var(--border-radius-lg);margin-top:0">
+  <div id="p-list"></div>
+  <div id="p-form" style="display:none"></div>
+  <div id="p-gantt" style="display:none"></div>
+  <div id="p-kpi" style="display:none"></div>
+  <div id="p-cfg" style="display:none"></div>
+</div>
+
+</div><!-- /app -->
+
+<script>
+const PASSWORD = "Dauthau2026@";
+
+function doLogin(){
+  const pw=document.getElementById('pw-in').value;
+  const err=document.getElementById('pw-err');
+  const inp=document.getElementById('pw-in');
+  if(pw===PASSWORD){
+    err.style.display='none';
+    const gate=document.getElementById('gate');
+    gate.style.opacity='0';
+    setTimeout(()=>{
+      gate.style.display='none';
+      const app=document.getElementById('app');
+      app.style.display='block';
+      requestAnimationFrame(()=>{ app.style.opacity='1'; });
+      document.getElementById('hdate').textContent='Ngày cập nhật: '+TODAY.toLocaleDateString('vi-VN');
+      renderM(); renderList();
+    },260);
+  } else {
+    err.style.display='block';
+    inp.style.borderColor='#E24B4A';
+    setTimeout(()=>{ inp.style.borderColor=''; }, 1800);
+  }
+}
+
+function doLogout(){
+  if(!confirm('Xác nhận đăng xuất khỏi hệ thống?')) return;
+  const app=document.getElementById('app');
+  app.style.opacity='0';
+  setTimeout(()=>{
+    app.style.display='none';
+    const gate=document.getElementById('gate');
+    gate.style.display='flex'; gate.style.opacity='0';
+    requestAnimationFrame(()=>{ gate.style.opacity='1'; });
+    document.getElementById('pw-in').value='';
+    document.getElementById('pw-err').style.display='none';
+  }, 320);
+}
+
+const TODAY=new Date();
+let gv='all', cur='list', eid=null, nid=8;
+let CFG={
+  deptName:'Phòng Đấu thầu', deptYear: new Date().getFullYear().toString(),
+  managers:['','','','','','','','','',''],
+  staff:[]
+};
+const TYPES=['Báo giá chi tiết','Khái toán','Báo giá phát sinh','Cải tạo','Hồ sơ đấu thầu','Nghiên cứu khả thi','Value Engineering'];
+let P=[];
+
+function pd(s){if(!s)return null;const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)}
+function fd(d){if(!d)return'—';return d.toLocaleDateString('vi-VN')}
+function ad(d,n){const r=new Date(d);r.setDate(r.getDate()+n);return r}
+function dd(a,b){return Math.round((b-a)/86400000)}
+function aend(p){const s=pd(p.start);if(!s)return null;return ad(s,p.days+p.dl.reduce((a,d)=>a+d.n,0)-1)}
+function stat(p){if(p.ae){return pd(p.ae)<=aend(p)?'done':'done-late'}const e=aend(p);if(!e)return'wait';const dl=dd(TODAY,e);return dl<0?'delayed':dl<=3?'risk':'track'}
+function sbadge(p){const s=stat(p),m={'done':['b-done','Hoàn thành'],'done-late':['b-delay','HT Trễ'],'delayed':['b-delay','Trễ hạn'],'risk':['b-risk','Sắp hạn'],'track':['b-track','Đúng TĐ'],'wait':['b-wait','Chờ BD']};const[c,l]=m[s]||['b-wait','—'];return`<span class="badge ${c}">${l}</span>`}
+function pbar(v){const c=v>=80?'#1D9E75':v>=50?'#BA7517':'#E24B4A';return`<div style="font-size:11.5px;color:#6b6a66">${v}%</div><div class="pb"><div class="pf" style="width:${v}%;background:${c}"></div></div>`}
+function autoDp(p){const s=pd(p.start);if(!s)return p.dp;const el=Math.max(0,dd(s,TODAY));const tot=p.days+p.dl.reduce((a,d)=>a+d.n,0);return Math.min(100,Math.max(0,Math.round(el/tot*100)))}
+
+function renderM(){
+  const dists=new Set(P.map(p=>p.ma)).size, adists=new Set(P.filter(p=>!p.ae).map(p=>p.ma)).size;
+  const tot=P.length, run=P.filter(p=>!p.ae).length;
+  const ok=P.filter(p=>['track','done'].includes(stat(p))).length;
+  const late=P.filter(p=>['delayed','risk','done-late'].includes(stat(p))).length;
+  document.getElementById('mets').innerHTML=`
+    <div class="mc"><div style="font-size:11.5px;color:#6b6a66;margin-bottom:5px">Tổng dự án</div><div style="font-size:22px;font-weight:500">${dists}</div><div style="font-size:11px;color:#6b6a66">${adists} đang thực hiện</div></div>
+    <div class="mc"><div style="font-size:11.5px;color:#6b6a66;margin-bottom:5px">Tổng công việc</div><div style="font-size:22px;font-weight:500">${tot}</div><div style="font-size:11px;color:#6b6a66">${run} đang chạy</div></div>
+    <div class="mc"><div style="font-size:11.5px;color:#6b6a66;margin-bottom:5px">Đúng tiến độ</div><div style="font-size:22px;font-weight:500;color:#0F6E56">${ok}</div><div style="font-size:11px;color:#6b6a66">công việc</div></div>
+    <div class="mc"><div style="font-size:11.5px;color:#6b6a66;margin-bottom:5px">Trễ tiến độ</div><div style="font-size:22px;font-weight:500;color:#A32D2D">${late}</div><div style="font-size:11px;color:#6b6a66">công việc</div></div>`;
+}
+
+function renderList(){
+  if(!P.length){document.getElementById('p-list').innerHTML='<div style="text-align:center;padding:3rem;color:#6b6a66"><i class="ti ti-inbox" style="font-size:32px;display:block;margin-bottom:10px"></i>Chưa có dự án nào. Nhấn "+ Thêm" để bắt đầu.</div>';return}
+  const rows=P.map(p=>{const e=aend(p);const tot=p.dl.reduce((a,d)=>a+d.n,0);
+    return`<tr><td><span style="font-size:12px;font-weight:500;color:#185FA5">${p.ma}</span></td>
+      <td><div style="font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px" title="${p.name}">${p.name}</div><div style="font-size:11px;color:#6b6a66">${p.type}</div></td>
+      <td style="white-space:nowrap">${p.mgr?p.mgr.split(' ').slice(-2).join(' '):'—'}</td>
+      <td style="font-size:11.5px;color:#6b6a66">${p.exec.map(e=>e.split(' ').slice(-1)[0]).join(', ')||'—'}</td>
+      <td style="font-size:12px;white-space:nowrap">${fd(pd(p.start))}<br><span style="color:#6b6a66;font-size:11px">→ ${fd(e)}</span></td>
+      <td style="text-align:center">${p.dl.length?`<span style="color:#A32D2D;font-weight:500">${p.dl.length}×</span><br><span style="font-size:11px;color:#6b6a66">+${tot}n</span>`:'<span style="color:#6b6a66">—</span>'}</td>
+      <td>${pbar(p.dp)}</td>
+      <td>${sbadge(p)}</td>
+      <td><button class="btn-e" onclick="editF(${p.id})"><i class="ti ti-edit"></i></button></td>
+    </tr>`;}).join('');
+  document.getElementById('p-list').innerHTML=`<div style="overflow-x:auto">
+    <table class="tbl" style="min-width:680px"><thead><tr>
+      <th style="width:95px">Mã dự án</th><th style="width:170px">Tên dự án</th><th style="width:95px">Quản lý</th>
+      <th style="width:100px">Thực hiện</th><th style="width:105px">Ngày BD → KH</th>
+      <th style="width:60px;text-align:center">Dời TĐ</th><th style="width:90px">TĐ Phòng</th>
+      <th style="width:95px">Trạng thái</th><th style="width:38px"></th>
+    </tr></thead><tbody>${rows}</tbody></table></div>
+    <div style="margin-top:10px;font-size:12px;color:#6b6a66"><i class="ti ti-info-circle"></i> Nhấn <i class="ti ti-edit"></i> để cập nhật tiến độ, ghi nhận delay log hoặc nhập kết quả hoàn thành.</div>`;
+}
+
+function renderForm(){
+  const p=eid?P.find(x=>x.id===eid):null, isNew=!p;
+  const e=p?aend(p):null, totDl=p?p.dl.reduce((a,d)=>a+d.n,0):0;
+  const isLate=p&&p.ae&&pd(p.ae)>aend(p);
+  const mgrList=CFG.managers.filter(m=>m.trim());
+  const mgrCbs=mgrList.length?mgrList.map(m=>`<label class="cb-item"><input type="radio" name="mgr" value="${m}" ${p&&p.mgr===m?'checked':''}>${m.split(' ').slice(-2).join(' ')}</label>`).join(''):`<span style="font-size:12.5px;color:#6b6a66">Chưa cấu hình — vào tab ⚙ Cấu hình</span>`;
+  const exCbs=CFG.staff.length?CFG.staff.map(s=>`<label class="cb-item"><input type="checkbox" name="ex" value="${s}" ${p&&p.exec.includes(s)?'checked':''}>${s.split(' ').slice(-1)[0]}</label>`).join(''):`<span style="font-size:12.5px;color:#6b6a66">Chưa cấu hình nhân sự — vào tab ⚙</span>`;
+  const typeOpts=TYPES.map(t=>`<option value="${t}" ${p&&p.type===t?'selected':''}>${t}</option>`).join('');
+  const dlList=p&&p.dl.length?p.dl.map((d,i)=>`<div style="display:flex;align-items:flex-start;gap:8px;padding:8px 12px;background:#f5f4f0;border-radius:8px;margin-bottom:6px;border:0.5px solid #e8e7e3"><div style="flex:1"><div style="font-size:13px;font-weight:500">Lần ${i+1} — ${fd(pd(d.dt))} <span style="color:#A32D2D;margin-left:6px">+${d.n} ngày</span></div><div style="font-size:12px;color:#6b6a66;margin-top:2px">${d.rsn}</div></div><button class="btn-d" onclick="rmDl(${p.id},${i})"><i class="ti ti-trash"></i></button></div>`).join(''):'<div style="font-size:13px;color:#6b6a66">Chưa có điều chỉnh tiến độ nào</div>';
+
+  document.getElementById('p-form').innerHTML=`
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+      <span style="font-size:15px;font-weight:500">${isNew?'Thêm công việc mới':`Cập nhật: ${p.name}`}</span>
+      ${!isNew?`<button class="btn-d" onclick="delP(${p.id})"><i class="ti ti-trash"></i> Xoá</button>`:''}
+    </div>
+    <p class="sh">1 — Thông tin chung</p>
+    <div class="fr">
+      <div class="fg"><label class="fl">Mã dự án *</label><input id="fma" type="text" placeholder="Vd: HP-2026-001" value="${p?p.ma:''}"></div>
+      <div class="fg"><label class="fl">Phân loại dự án *</label><select id="ft"><option value="">— Chọn loại —</option>${typeOpts}</select></div>
+    </div>
+    <div class="fg"><label class="fl">Tên dự án *</label><input id="fn" type="text" placeholder="Vd: Nhà xưởng Foxconn – Bình Dương" value="${p?p.name:''}"></div>
+    <div class="fg"><label class="fl">Quản lý phụ trách * <span style="font-size:11px;font-weight:400;color:#6b6a66">(cấu hình tại tab ⚙)</span></label><div class="cb-row">${mgrCbs}</div></div>
+    <div class="fg"><label class="fl">Nhân sự trực tiếp thực hiện <span style="font-size:11px;font-weight:400;color:#6b6a66">(phục vụ tính thưởng cuối kỳ)</span></label><div class="cb-row">${exCbs}</div></div>
+    <div class="fg"><label class="fl">Mô tả nội dung / Scope</label><textarea id="fd" rows="2" placeholder="Scope, deliverables, hồ sơ đầu vào...">${p?p.desc:''}</textarea></div>
+
+    <p class="sh" style="margin-top:1.1rem">2 — Kiểm soát tiến độ</p>
+    <div class="fr3">
+      <div class="fg"><label class="fl">Ngày bắt đầu *</label><input id="fs" type="date" value="${p?p.start:''}" oninput="calcE()"></div>
+      <div class="fg"><label class="fl">Số ngày dự kiến *</label><input id="fdy" type="number" min="1" placeholder="Vd: 21" value="${p?p.days:''}" oninput="calcE()"></div>
+      <div class="fg"><label class="fl">Ngày kế hoạch (tự tính)</label><input id="fe" type="text" readonly value="${e?fd(e):'—'}" style="background:#f5f4f0;color:#6b6a66"></div>
+    </div>
+    <div class="fg"><label class="fl">Tiến độ Phòng (Dept Level) — <span id="dv" style="color:#185FA5;font-weight:500">${p?p.dp:0}%</span></label>
+      <input type="range" id="fdp" min="0" max="100" step="5" value="${p?p.dp:0}" oninput="document.getElementById('dv').textContent=this.value+'%'" style="width:100%;padding:0;border:none"></div>
+
+    <p class="sh" style="margin-top:1.1rem">3 — Delay Log — Ghi nhận dời tiến độ</p>
+    ${p?`<div style="margin-bottom:10px">${dlList}</div>
+    ${totDl>0?`<div style="font-size:12.5px;background:#FAEEDA;border:0.5px solid #FAC775;padding:7px 12px;border-radius:8px;margin-bottom:10px;color:#854F0B"><i class="ti ti-alert-triangle"></i> Tổng offset: <strong>+${totDl} ngày</strong> → Ngày KH điều chỉnh: <strong style="color:#1a1a18">${fd(e)}</strong></div>`:''}
+    <details><summary style="font-size:13px;font-weight:500;color:#185FA5"><i class="ti ti-plus"></i> Ghi nhận dời tiến độ mới</summary>
+    <div class="dl-wrap">
+      <div style="font-size:13px;font-weight:500;color:#185FA5;margin-bottom:10px"><i class="ti ti-calendar-event"></i> Thêm bản ghi dời tiến độ</div>
+      <div class="fr3">
+        <div class="fg"><label class="fl" style="color:#1a1a18">Ngày dời</label><input type="date" id="ddt"></div>
+        <div class="fg"><label class="fl" style="color:#1a1a18">Offset (ngày)</label><input type="number" id="ddn" min="1" placeholder="Vd: 3"></div>
+        <div class="fg" style="display:flex;align-items:flex-end"><button class="btn-add-dl" onclick="addDl()"><i class="ti ti-plus"></i> Thêm & Cập nhật TĐ</button></div>
+      </div>
+      <div class="fg"><label class="fl" style="color:#1a1a18">Nguyên nhân dời</label><input type="text" id="ddr" placeholder="Vd: Chờ phản hồi RFI, thiếu thông tin kỹ thuật..."></div>
+    </div></details>`:`<div style="font-size:13px;color:#6b6a66">Lưu công việc trước để ghi nhận delay log.</div>`}
+
+    <p class="sh" style="margin-top:1.1rem">4 — Hoàn thành thực tế & Thẩm định KPI</p>
+    <div class="fg" style="max-width:220px"><label class="fl">Ngày hoàn thành thực tế</label><input type="date" id="fa" value="${p&&p.ae?p.ae:''}" oninput="chkLate()"></div>
+    <div id="drbox" style="${isLate?'':'display:none'}"><div class="late-box">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><i class="ti ti-alert-circle" style="color:#854F0B;font-size:18px"></i><span style="font-size:13px;font-weight:500;color:#854F0B">Phát hiện trễ hạn — bắt buộc khai báo để thẩm định KPI nội bộ</span></div>
+      <label class="fl">Lý do trễ hạn * (Nguyên nhân / Bài học kinh nghiệm)</label>
+      <textarea id="fdr" rows="3" placeholder="Nêu rõ nguyên nhân khách quan / chủ quan, đề xuất cải tiến...">${p?p.dr:''}</textarea>
+    </div></div>
+
+    <div style="display:flex;gap:8px;margin-top:1.25rem;justify-content:flex-end">
+      <button class="btn btn-s" onclick="go('list')">Huỷ</button>
+      <button class="btn btn-p" onclick="saveP()"><i class="ti ti-device-floppy"></i> ${isNew?'Tạo công việc':'Lưu thay đổi'}</button>
+    </div>`;
+}
+
+function renderGantt(){
+  if(!P.length){document.getElementById('p-gantt').innerHTML='<div style="text-align:center;padding:3rem;color:#6b6a66">Chưa có dự án.</div>';return}
+  let minD,maxD;
+  if(gv==='1m'){minD=ad(TODAY,-3);maxD=ad(TODAY,27)}
+  else if(gv==='2m'){minD=ad(TODAY,-5);maxD=ad(TODAY,55)}
+  else{minD=new Date(2099,0,1);maxD=new Date(2000,0,1);P.forEach(p=>{const s=pd(p.start),e=aend(p);if(s&&s<minD)minD=s;if(e&&e>maxD)maxD=e});minD=ad(minD,-5);maxD=ad(maxD,7)}
+  const tot=Math.max(1,dd(minD,maxD));
+  function pc(d){return Math.max(0,Math.min(100,dd(minD,d)/tot*100)).toFixed(1)}
+  const todP=parseFloat(pc(TODAY));
+  const SC={'track':'#1D9E75','risk':'#BA7517','delayed':'#E24B4A','done':'#888780','done-late':'#D85A30','wait':'#378ADD'};
+  let wh='';let c=new Date(minD);
+  while(c<=maxD){const l=pc(c);wh+=`<div style="position:absolute;left:${l}%;top:0;bottom:0;border-left:0.5px solid #e8e7e3;padding:0 3px;font-size:10px;color:#6b6a66;line-height:28px;white-space:nowrap">${c.getDate()}/${c.getMonth()+1}</div>`;c=ad(c,7)}
+  const rows=P.map(p=>{const s=pd(p.start),e=aend(p);if(!s||!e)return'';
+    const L=parseFloat(pc(s)),R=parseFloat(pc(e)),W=Math.max(R-L,0.4),col=SC[stat(p)]||'#888780';
+    const nm=p.name.length>20?p.name.substring(0,20)+'…':p.name;
+    return`<div class="gt-row"><div class="gt-lbl"><div style="font-weight:500;color:#1a1a18">${nm}</div><div style="font-size:11px;color:#6b6a66">${p.ma}</div></div>
+      <div class="gt-tl"><div class="gt-tdl" style="left:${todP}%"></div><div class="gt-bar" style="left:${L}%;width:${W}%;background:${col}" title="${p.name}: ${fd(s)} → ${fd(e)}">${W>14?nm:''}</div></div></div>`;}).join('');
+  const leg=Object.entries({'track':'Đúng TĐ','risk':'Sắp hạn','delayed':'Trễ hạn','done':'Hoàn thành','done-late':'HT Trễ','wait':'Chờ'}).map(([k,v])=>`<span style="display:flex;align-items:center;gap:4px;font-size:12px"><span style="width:12px;height:6px;border-radius:2px;background:${SC[k]};display:inline-block"></span>${v}</span>`).join('')+`<span style="display:flex;align-items:center;gap:4px;font-size:12px"><span style="width:2px;height:13px;background:#E24B4A;display:inline-block"></span>Hôm nay</span>`;
+  const vpB=['all','1m','2m'].map((v,i)=>`<button class="vp-btn ${gv===v?'active':''}" onclick="gv='${v}';renderGantt()">${['Toàn bộ','1 tháng','2 tháng'][i]}</button>`).join('');
+  document.getElementById('p-gantt').innerHTML=`
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px">
+      <div style="display:flex;flex-wrap:wrap;gap:12px">${leg}</div>
+      <div style="display:flex;gap:6px;align-items:center"><span style="font-size:12px;color:#6b6a66">Hiển thị:</span>${vpB}</div>
+    </div>
+    <div style="overflow-x:auto"><div style="min-width:520px">
+      <div class="gt-row"><div class="gt-lbl" style="font-size:11px;font-weight:500;color:#6b6a66">Dự án / Mã DA</div><div class="gt-tl" style="height:28px"><div class="gt-tdl" style="left:${todP}%"></div>${wh}</div></div>${rows}
+    </div></div>
+    <div style="margin-top:10px;font-size:12px;color:#6b6a66"><i class="ti ti-info-circle"></i> Ngày kế hoạch đã tích lũy tổng ngày delay offset.</div>`;
+}
+
+function renderKPI(){
+  const allM=[...new Set(P.filter(p=>p.mgr).map(p=>p.mgr))];
+  const allS=[...new Set(P.flatMap(p=>p.exec))];
+  function prow(name,role){
+    const mgd=P.filter(p=>p.mgr===name),exc=P.filter(p=>p.exec.includes(name)&&p.mgr!==name);
+    if(!mgd.length&&!exc.length)return'';
+    const all=[...new Set([...mgd,...exc])],dn=all.filter(p=>p.ae);
+    const onT=dn.filter(p=>pd(p.ae)<=aend(p)).length,late=dn.filter(p=>pd(p.ae)>aend(p)).length;
+    const act=all.filter(p=>!p.ae).length,totDl=all.reduce((a,p)=>a+p.dl.reduce((b,d)=>b+d.n,0),0);
+    const ini=name.split(' ').slice(-1)[0][0];
+    return`<tr><td><div style="display:flex;align-items:center;gap:8px"><div style="width:30px;height:30px;border-radius:50%;background:#E6F1FB;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#185FA5;flex-shrink:0">${ini}</div><div><div style="font-size:13px;font-weight:500">${name}</div><div style="font-size:11px;color:#6b6a66">${role}</div></div></div></td>
+      <td style="text-align:center">${mgd.length||'—'}</td><td style="text-align:center">${exc.length||'—'}</td>
+      <td style="text-align:center">${act}</td><td style="text-align:center">${dn.length}</td>
+      <td style="text-align:center;color:#0F6E56;font-weight:500">${onT||'—'}</td>
+      <td style="text-align:center;color:${late?'#A32D2D':'#6b6a66'}">${late||'—'}</td>
+      <td style="text-align:center">${totDl>0?`<span style="color:#A32D2D">+${totDl}</span>`:'0'}</td></tr>`;
+  }
+  const rows=[...allM.map(n=>prow(n,'Quản lý')),...allS.filter(n=>!allM.includes(n)).map(n=>prow(n,'Thực hiện'))].filter(Boolean).join('');
+  document.getElementById('p-kpi').innerHTML=`<div style="overflow-x:auto"><table class="tbl" style="min-width:560px"><thead><tr>
+    <th style="width:170px">Nhân sự</th><th style="width:60px;text-align:center">Q.lý</th><th style="width:65px;text-align:center">Thực hiện</th>
+    <th style="width:65px;text-align:center">Đang TH</th><th style="width:60px;text-align:center">Đã HT</th>
+    <th style="width:75px;text-align:center">Đúng hạn</th><th style="width:50px;text-align:center">Trễ</th>
+    <th style="width:95px;text-align:center">Tổng delay (n)</th>
+  </tr></thead><tbody>${rows||'<tr><td colspan="8" style="text-align:center;color:#6b6a66;padding:3rem">Chưa có dữ liệu</td></tr>'}</tbody></table></div>
+  <div style="margin-top:10px;font-size:12px;color:#6b6a66"><i class="ti ti-info-circle"></i> KPI được thẩm định nội bộ cuối kỳ. Trễ có kèm lý do giải trình được xét duyệt riêng.</div>`;
+}
+
+function renderCFG(){
+  const slots=Array.from({length:10},(_,i)=>`<div class="fg" style="margin-bottom:8px"><label class="fl">Quản lý ${i+1}</label><input type="text" id="ms${i}" value="${CFG.managers[i]||''}" placeholder="Nhập tên quản lý..."></div>`).join('');
+  const stags=CFG.staff.map((s,i)=>`<div class="stag">${s}<button onclick="rmSt(${i})" style="background:none;border:none;color:#A32D2D;cursor:pointer;padding:0;margin-left:6px;font-size:15px;line-height:1"><i class="ti ti-x"></i></button></div>`).join('');
+  document.getElementById('p-cfg').innerHTML=`
+    <p class="sh">Phòng ban & Năm báo cáo</p>
+    <div class="fr fg">
+      <div class="fg"><label class="fl">Tên phòng ban</label><input id="cd" type="text" value="${CFG.deptName}"></div>
+      <div class="fg"><label class="fl">Năm báo cáo</label><input id="cy" type="text" value="${CFG.deptYear}"></div>
+    </div>
+    <p class="sh">Danh sách Quản lý <span style="font-size:12px;font-weight:400;color:#6b6a66">(10 vị trí — hiển thị dạng radio trong form)</span></p>
+    <div class="slot-grid" style="margin-bottom:1.1rem">${slots}</div>
+    <p class="sh">Danh sách Nhân sự thực hiện <span style="font-size:12px;font-weight:400;color:#6b6a66">(source checkbox tích chọn)</span></p>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">${stags||'<span style="font-size:13px;color:#6b6a66">Chưa có nhân sự nào</span>'}</div>
+    <div style="display:flex;gap:8px;margin-bottom:1.25rem"><input id="nst" type="text" placeholder="Tên nhân sự mới..." style="flex:1"><button class="btn btn-p" onclick="addSt()"><i class="ti ti-plus"></i> Thêm</button></div>
+    <div style="display:flex;justify-content:flex-end"><button class="btn btn-p" onclick="saveCFG()"><i class="ti ti-device-floppy"></i> Lưu cấu hình & áp dụng</button></div>`;
+}
+
+function go(tab){
+  cur=tab;
+  ['list','form','gantt','kpi','cfg'].forEach(t=>{
+    document.getElementById('p-'+t).style.display=t===tab?'block':'none';
+    const b=document.getElementById('t-'+t);if(b)b.classList.toggle('active',t===tab);
+  });
+  if(tab==='list')renderList();if(tab==='form')renderForm();
+  if(tab==='gantt')renderGantt();if(tab==='kpi')renderKPI();if(tab==='cfg')renderCFG();
+}
+function editF(id){eid=id;go('form')}
+function newF(){eid=null;go('form')}
+function calcE(){
+  const s=document.getElementById('fs')?.value,d=parseInt(document.getElementById('fdy')?.value);
+  const el=document.getElementById('fe');if(!el)return;
+  if(s&&d){const tot=eid?(P.find(x=>x.id===eid)?.dl||[]).reduce((a,dl)=>a+dl.n,0):0;el.value=fd(ad(pd(s),d+tot-1))}else el.value='—';
+}
+function chkLate(){
+  const av=document.getElementById('fa')?.value,box=document.getElementById('drbox');
+  if(!box||!av||!eid)return;
+  const p=P.find(x=>x.id===eid);if(!p)return;
+  box.style.display=pd(av)>aend(p)?'block':'none';
+}
+function addDl(){
+  if(!eid)return;const p=P.find(x=>x.id===eid);if(!p)return;
+  const dt=document.getElementById('ddt')?.value,n=parseInt(document.getElementById('ddn')?.value);
+  const rsn=(document.getElementById('ddr')?.value||'').trim();
+  if(!dt||!n||n<1){alert('Vui lòng nhập Ngày dời và số ngày offset');return}
+  p.dl.push({dt,rsn:rsn||'Không rõ nguyên nhân',n});p.dp=autoDp(p);renderForm();
+}
+function rmDl(id,i){const p=P.find(x=>x.id===id);if(!p)return;p.dl.splice(i,1);p.dp=autoDp(p);renderForm()}
+function saveP(){
+  const ma=(document.getElementById('fma')?.value||'').trim(),name=(document.getElementById('fn')?.value||'').trim();
+  const type=document.getElementById('ft')?.value,start=document.getElementById('fs')?.value;
+  const days=parseInt(document.getElementById('fdy')?.value);
+  if(!ma||!name||!type||!start||!days){alert('Vui lòng điền đầy đủ các trường bắt buộc (*)');return}
+  const mgr=document.querySelector('input[name="mgr"]:checked')?.value||'';
+  const exec=[...document.querySelectorAll('input[name="ex"]:checked')].map(e=>e.value);
+  const desc=document.getElementById('fd')?.value||'',dp=parseInt(document.getElementById('fdp')?.value)||0;
+  const ae=document.getElementById('fa')?.value||null,dr=(document.getElementById('fdr')?.value||'').trim();
+  if(ae&&eid){const p=P.find(x=>x.id===eid);if(p&&pd(ae)>aend(p)&&!dr){alert('Bắt buộc nhập lý do trễ hạn để thẩm định KPI nội bộ');return}}
+  if(eid){const p=P.find(x=>x.id===eid);if(p)Object.assign(p,{ma,name,mgr,type,start,days,desc,exec,dp,ae:ae||null,dr})}
+  else P.push({id:nid++,ma,name,mgr,type,start,days,desc,exec,dp,dl:[],ae:null,dr:''});
+  renderM();go('list');
+}
+function delP(id){if(!confirm('Xoá công việc này? Không thể hoàn tác.'))return;P=P.filter(p=>p.id!==id);eid=null;renderM();go('list')}
+function addSt(){const inp=document.getElementById('nst'),name=(inp?.value||'').trim();if(!name)return;if(CFG.staff.includes(name)){alert('Nhân sự đã tồn tại');return}CFG.staff.push(name);if(inp)inp.value='';renderCFG()}
+function rmSt(i){CFG.staff.splice(i,1);renderCFG()}
+function saveCFG(){
+  const dept=(document.getElementById('cd')?.value||'').trim(),year=(document.getElementById('cy')?.value||'').trim();
+  if(dept){CFG.deptName=dept;const h=document.getElementById('h-dept');if(h)h.value=dept}
+  if(year){CFG.deptYear=year;const h=document.getElementById('h-year');if(h)h.value=year}
+  for(let i=0;i<10;i++){const el=document.getElementById('ms'+i);if(el)CFG.managers[i]=el.value.trim()}
+  renderM();alert('Đã lưu cấu hình. Danh sách quản lý & nhân sự đã cập nhật.');
+}
+function expXL(){
+  function doExp(){
+    const WB=XLSX.utils.book_new();
+    let mn=new Date(2099,0,1),mx=new Date(2000,0,1);
+    P.forEach(p=>{const s=pd(p.start),e=aend(p);if(s&&s<mn)mn=s;if(e&&e>mx)mx=e});
+    if(!P.length){mn=TODAY;mx=ad(TODAY,30)}
+    const wks=[];let wc=new Date(mn);while(wc<=mx){wks.push(new Date(wc));wc=ad(wc,7)}
+    const whdr=wks.map((w,i)=>`T${i+1}\n${w.getDate()}/${w.getMonth()+1}`);
+    const now=new Date();
+    const aoa=[
+      ['HP CONS','','','BẢNG THEO DÕI TIẾN ĐỘ CÔNG VIỆC','','','','','',''].concat(Array(whdr.length).fill('')),
+      ['','','',CFG.deptName+' — Năm '+CFG.deptYear],
+      ['Ngày lập:',now.toLocaleDateString('vi-VN'),'','Người lập:','','Người kiểm duyệt:',''],
+      [],
+      ['STT','Mã DA','Tên dự án','Hạng mục','Leader','Nhân sự thực hiện','Tiến độ cập nhật','Biện pháp kiểm soát','Phản hồi','% Hoàn thành'].concat(whdr)
+    ];
+    P.forEach((p,i)=>{
+      const s=pd(p.start),e=aend(p);
+      const td=p.dl.length?`Dời ${p.dl.length} lần (+${p.dl.reduce((a,d)=>a+d.n,0)}n)`:'Đúng kế hoạch';
+      const wcs=wks.map(w=>{if(!s||!e)return'';return(w<=e&&ad(w,6)>=s)?'▓':''});
+      aoa.push([i+1,p.ma,p.name,p.type,p.mgr,p.exec.join(', '),td,'','',p.dp+'%'].concat(wcs));
+    });
+    const ws=XLSX.utils.aoa_to_sheet(aoa);
+    ws['!cols']=[{wch:5},{wch:13},{wch:26},{wch:18},{wch:18},{wch:22},{wch:18},{wch:18},{wch:12},{wch:10}].concat(wks.map(()=>({wch:5})));
+    ws['!merges']=[{s:{r:0,c:3},e:{r:0,c:9}}];
+    XLSX.utils.book_append_sheet(WB,ws,'Tiến Độ');
+    XLSX.writeFile(WB,`TienDo_${CFG.deptName.replace(/\s/g,'_')}_${CFG.deptYear}.xlsx`);
+  }
+  if(window.XLSX){doExp();return}
+  const sc=document.createElement('script');
+  sc.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+  sc.onload=doExp;sc.onerror=()=>alert('Không tải được thư viện xlsx.');
+  document.head.appendChild(sc);
+}
+</script>
+</body>
+</html>
